@@ -1,8 +1,6 @@
 from flask import redirect, url_for, request, jsonify
 from models.User import Usuarios
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from models.User import db
 
 
 def users():
