@@ -1,6 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from control.MainController import db
 
 
 class Usuarios(db.Model):

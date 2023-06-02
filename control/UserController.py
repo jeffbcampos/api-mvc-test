@@ -1,11 +1,11 @@
 from flask import redirect, url_for, request, jsonify
 from models.User import Usuarios
-from models.User import db
+from control.MainController import db
 
 
 def users():
-    query = Usuarios.query.all()
-    return jsonify([e.serialize for e in query])
+    usuarios = Usuarios.query.all()
+    return jsonify([e.serialize for e in usuarios])
 
 
 def cadastro():
@@ -13,6 +13,11 @@ def cadastro():
     email = request.json['email']
     senha = request.json['senha']
     usuario = Usuarios(nome=nome, email=email, senha=senha)
-    db.session.add(usuario)
-    db.session.commit()
-    return jsonify(usuario.serialize)
+    result = Usuarios.query.filter_by(email=email).first()
+    print(result.email)
+    if result:
+        return jsonify({'msg': 'Email já cadastrado'})
+    else:
+        db.session.add(usuario)
+        db.session.commit()
+        return jsonify(usuario.serialize)
