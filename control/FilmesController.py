@@ -21,3 +21,40 @@ def consultarFilmes():
                 return jsonify({'msg': 'fail'})
     except Exception as e:
         print(e)
+        
+        
+@jwt_required()
+def inserirFilme():
+    try:
+        titulo = request.json['titulo']
+        imagem = request.json['imagem']
+        nota = request.json['nota']
+        tipo = request.json['tipo']
+        id_api = request.json['id_api']
+        id_usuario = get_jwt_identity()
+        result = db.session.query(Filmes).filter_by(titulo=titulo,id_usuario=id_usuario).first()
+        if result:
+            return jsonify({'msg': 'fail'})
+        else:
+            db.session.add(Filmes(titulo=titulo, imagem=imagem, nota=nota, tipo=tipo, id_api=id_api, id_usuario=id_usuario))
+            db.session.commit()
+            return jsonify({'msg': 'success'})
+    except Exception as e:
+        print(e)
+        
+        
+@jwt_required()
+def removerFilme():
+    try:
+        titulo = request.json['titulo']
+        id_usuario = get_jwt_identity()
+        result = db.session.query(Filmes).filter_by(titulo=titulo,id_usuario=id_usuario).first()
+        if result:
+            db.session.delete(result)
+            db.session.commit()
+            return jsonify({'msg': 'success'})
+        else:
+            return jsonify({'msg': 'fail'})
+    except Exception as e:
+        print(e)
+        

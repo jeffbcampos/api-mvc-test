@@ -56,8 +56,8 @@ def atualizarUsuario():
         response = Usuarios.query.filter_by(id=id_usuario).first()
         if checkpw(senha, response.senha.encode('utf-8')):
             update = update(Usuarios).where(Usuarios.id == id_usuario).values(nome=nome)
-            db.execute(update)
-            db.commit()
+            db.session.execute(update)
+            db.session.commit()
             return jsonify({'status': 'success', 'msg': 'Usuário atualizado com sucesso'})
         else:
             return jsonify({'status': 'fail', 'msg': 'Senha incorreta'})
@@ -77,8 +77,8 @@ def atualizarSenha():
                 salt = gensalt()
                 senha = hashpw(senha, salt).decode('utf-8')
                 update = update(Usuarios).where(Usuarios.id == id_usuario).values(senha=senha)
-                db.execute(update)
-                db.commit()
+                db.session.execute(update)
+                db.session.commit()
                 return jsonify({'status': 'success', 'msg': 'Senha atualizada com sucesso'})
             else:
                 return jsonify({'status': 'senhaFraca'})
@@ -112,14 +112,14 @@ def deletarUsuario():
     try:
         id_usuario = get_jwt_identity()
         senhaUser = request.json['senha'].encode('utf-8')
-        response = db.query(Usuarios).filter_by(id=id_usuario).first()
+        response = db.session.query(Usuarios).filter_by(id=id_usuario).first()
         senha = response.senha.encode('utf-8')
         if checkpw(senhaUser, senha):            
-            db.query(Filmes).filter_by(id_usuario=id_usuario).delete()
-            db.query(Series).filter_by(id_usuario=id_usuario).delete()
-            db.query(ListaDesejo).filter_by(id_usuario=id_usuario).delete()
-            db.query(Usuarios).filter_by(id=id_usuario).delete()
-            db.commit()
+            db.session.query(Filmes).filter_by(id_usuario=id_usuario).delete()
+            db.session.query(Series).filter_by(id_usuario=id_usuario).delete()
+            db.session.query(ListaDesejo).filter_by(id_usuario=id_usuario).delete()
+            db.session.query(Usuarios).filter_by(id=id_usuario).delete()
+            db.session.commit()
             return jsonify({'status': 'success', 'msg': 'Usuário deletado com sucesso'})
         else:
             return jsonify({'status': 'fail', 'msg': 'Senha incorreta'})
