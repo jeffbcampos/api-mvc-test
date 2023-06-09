@@ -6,6 +6,7 @@ class Verificacao(db.Model):
     nome = db.Column(db.String)
     email = db.Column(db.String)
     senha = db.Column(db.String)
+    isvalid = db.Column(db.Boolean, default=False)
     token = db.Column(db.String)
     
     @property
@@ -15,6 +16,7 @@ class Verificacao(db.Model):
             'nome': self.nome,
             'email': self.email,
             'senha': self.senha,
+            'isValid': self.isvalid,
             'token': self.token
         }
     

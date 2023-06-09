@@ -1,8 +1,9 @@
-from flask import redirect, url_for, request, jsonify
+from flask import redirect, request, jsonify
 from control.MainController import db
 from datetime import timedelta
 from models.Verificacao import Verificacao
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, decode_token
+from models.User import Usuarios
+from flask_jwt_extended import create_access_token
 
 apiUrl = 'http://localhost:5000'
 
@@ -29,3 +30,21 @@ def enviarEmail():
         return jsonify({'status': 'success', 'msg': 'Email enviado com sucesso'})
     except Exception as e:
         print(e)
+        
+def confirmarEmail(token):
+    try:
+        response = db.query(Verificacao).filter_by(token=token, isValid=False).all()
+        if response:
+            db.query(Verificacao).filter_by(token=token).update({Verificacao.isvalid: True})
+            db.commit()
+            new_user = Usuarios(nome=response.nome, email=response.email, senha=response.senha)
+            db.add(new_user)
+            db.commit()
+            return redirect(f'{apiUrl}/finalizado?q={token}')
+        else:
+            return redirect(f'{apiUrl}/finalizado')
+    except Exception as e:
+        print(e)
+            
+            
+        

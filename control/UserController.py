@@ -1,5 +1,8 @@
 from flask import redirect, url_for, request, jsonify
 from models.User import Usuarios
+from models.Filmes import Filmes
+from models.Series import Series
+from models.ListaDesejo import ListaDesejo
 from control.MainController import db, verificaSenha
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, decode_token
 from bcrypt import hashpw, gensalt, checkpw
@@ -103,6 +106,27 @@ def inserirUsuario():
                 return jsonify({'status': 'senhaFraca'})
     except Exception as e:
         print(e)
+
+@jwt_required()
+def deletarUsuario():
+    try:
+        id_usuario = get_jwt_identity()
+        senhaUser = request.json['senha'].encode('utf-8')
+        response = db.query(Usuarios).filter_by(id=id_usuario).first()
+        senha = response.senha.encode('utf-8')
+        if checkpw(senhaUser, senha):            
+            db.query(Filmes).filter_by(id_usuario=id_usuario).delete()
+            db.query(Series).filter_by(id_usuario=id_usuario).delete()
+            db.query(ListaDesejo).filter_by(id_usuario=id_usuario).delete()
+            db.query(Usuarios).filter_by(id=id_usuario).delete()
+            db.commit()
+            return jsonify({'status': 'success', 'msg': 'Usuário deletado com sucesso'})
+        else:
+            return jsonify({'status': 'fail', 'msg': 'Senha incorreta'})
+    except Exception as e:
+        print(e)
+            
+            
     
             
         
