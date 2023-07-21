@@ -27,20 +27,6 @@ def checarUsuarios():
         print(e)
 
 
-def cadastro():
-    nome = request.json['nome']
-    email = request.json['email']
-    senha = request.json['senha']
-    usuario = Usuarios(nome=nome, email=email, senha=senha)
-    result = Usuarios.query.filter_by(email=email).first()
-    print(result.email)
-    if result:
-        return jsonify({'msg': 'Email já cadastrado'})
-    else:
-        db.session.add(usuario)
-        db.session.commit()
-        return jsonify(usuario.serialize)
-
 @jwt_required()
 def atualizarUsuario():
     try:
