@@ -9,12 +9,6 @@ from bcrypt import hashpw, gensalt, checkpw
 from routes.mail_routes import mail_routes
 
 
-@jwt_required()
-def users():
-    usuarios = Usuarios.query.all()
-    return jsonify([e.serialize for e in usuarios])
-
-
 def checarUsuarios():
     try:
         email = request.json['email']
